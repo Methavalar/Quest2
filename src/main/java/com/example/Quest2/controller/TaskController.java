@@ -4,6 +4,7 @@ import com.example.Quest2.dto.TaskReceive;
 import com.example.Quest2.dto.TaskResponse;
 import com.example.Quest2.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,30 +16,38 @@ public class TaskController {
     private TaskService taskService;
 
     @GetMapping("/task")
-    public List<TaskResponse> findAll() {
-        return taskService.findAll();
+    public ResponseEntity<List<TaskResponse>> findAll() {
+        List<TaskResponse> tasks = taskService.findAll();
+        if (tasks == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(tasks);
     }
 
     @GetMapping("/task/{id}")
-    public TaskResponse findById(@PathVariable Integer id) {
-        return taskService.findById(id);
+    public ResponseEntity<TaskResponse> findById(@PathVariable Integer id) {
+        TaskResponse task = taskService.findById(id);
+        if (task == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(task);
     }
 
     @DeleteMapping("/task/{id}")
-    public String deleteById(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteById(@PathVariable Integer id) {
         taskService.deleteById(id);
-        return "Task delete from the database";
+        return ResponseEntity.ok("Task delete from the database");
     }
 
     @PostMapping("/task")
-    public String save(@RequestBody TaskReceive t) {
+    public ResponseEntity<String> save(@RequestBody TaskReceive t) {
         taskService.save(t);
-        return "Task saved successfully";
+        return ResponseEntity.ok("Task saved from the database");
     }
 
     @PutMapping("/task/{id}")
-    public String update(@RequestBody TaskReceive t, @PathVariable Integer id) {
+    public ResponseEntity<String> update(@RequestBody TaskReceive t, @PathVariable Integer id) {
         taskService.update(t, id);
-        return "Task updated successfully";
+        return ResponseEntity.ok("Task updated from the database");
     }
 }

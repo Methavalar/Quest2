@@ -4,6 +4,7 @@ import com.example.Quest2.dto.EmployeeResponse;
 import com.example.Quest2.model.Employee;
 import com.example.Quest2.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,30 +16,38 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @GetMapping("/employee")
-    public List<EmployeeResponse> findAll() {
-        return employeeService.findAll();
+    public ResponseEntity<List<EmployeeResponse>> findAll() {
+        List<EmployeeResponse> employees = employeeService.findAll();
+        if (employees == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(employees);
     }
 
     @GetMapping("/employee/{id}")
-    public EmployeeResponse findById(@PathVariable Integer id) {
-        return employeeService.findById(id);
+    public ResponseEntity<EmployeeResponse> findById(@PathVariable Integer id) {
+        EmployeeResponse employee = employeeService.findById(id);
+        if (employee == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(employee);
     }
 
     @DeleteMapping("/employee/{id}")
-    public String deleteById(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteById(@PathVariable Integer id) {
         employeeService.deleteById(id);
-        return "Employee delete from the database";
+        return ResponseEntity.ok("Employee delete from the database");
     }
 
     @PostMapping("/employee")
-    public String save(@RequestBody Employee e) {
+    public ResponseEntity<String> save(@RequestBody Employee e) {
         employeeService.save(e);
-        return "Employee saved successfully";
+        return ResponseEntity.ok("Employee saved successfully");
     }
 
     @PutMapping("/employee/{id}")
-    public String update(@RequestBody Employee e, @PathVariable Integer id) {
+    public ResponseEntity<String> update(@RequestBody Employee e, @PathVariable Integer id) {
         employeeService.update(e, id);
-        return "Employee updated successfully";
+        return ResponseEntity.ok("Employee updated successfully");
     }
 }
